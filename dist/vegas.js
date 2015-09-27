@@ -201,11 +201,11 @@
 
                 if (this.settings.preload || this.settings.preloadVideos) {
                     if (this.support.video && this.settings.slides[i].video) {
-                        if (this.settings.slides[i].video instanceof Array) {
-                            video = this._video(this.settings.slides[i].video);
-                        } else {
-                            video = this._video(this.settings.slides[i].video.src);
-                        }
+                        // if (this.settings.slides[i].video instanceof Array) {
+                        video = this._video(this.settings.slides[i]);
+                        // } else {
+                            // video = this._video(this.settings.slides[i].video.src);
+                        // }
                     }
                 }
             }
@@ -221,7 +221,7 @@
             if (this.total > 1 && !this.paused && !this.noshow) {
                 this.timeout = setTimeout(function () {
                     self.next();
-                }, this._options('delay')); 
+                }, this._options('delay'));
             }
         },
 
@@ -253,8 +253,10 @@
             }
         },
 
-        _video: function (srcs) {
-            var video, 
+        // _video: function (srcs) {
+        _video: function(slide) {
+            var video,
+                srcs = slide.video.src,
                 source,
                 cacheKey = srcs.toString();
 
@@ -268,6 +270,11 @@
 
             video = document.createElement('video');
             video.preload = true;
+            video.addEventListener("loadedmetadata", function(meta) {
+              console.log("duration = ", video.duration);
+              slide.delay = video.duration*1000
+              console.log("Set delay to ", slide.delay);
+            });
 
             srcs.forEach(function (src) {
                 source = document.createElement('source');
@@ -384,10 +391,11 @@
 
             if (this.support.video && videoSettings) {
                 if (videoSettings instanceof Array) {
-                    video = this._video(videoSettings);
+                    // video = this._video(videoSettings);
                 } else {
-                    video = this._video(videoSettings.src);
+                    // video = this._video(videoSettings.src);
                 }
+                video = this._video(this.settings.slides[nb]);
 
                 video.loop  = videoSettings.loop !== undefined ? videoSettings.loop : true;
                 video.muted = videoSettings.mute !== undefined ? videoSettings.mute : true;
