@@ -487,6 +487,7 @@
                     for (var i = 0; i < $slides.length - 4; i++) {
                          $slides.eq(i).remove();
                     }
+                    self.$slide = $slide;
 
                     self.trigger('walk');
                     self._slideShow();
@@ -604,6 +605,8 @@
 
         options: function (key, value) {
             var oldSlides = this.settings.slides.slice();
+            var oldCover = this.settings.cover;
+            console.log("old cover = ", oldCover);
 
             if (typeof key === 'object') {
                 this.settings = $.extend({}, defaults, $.vegas.defaults, key);
@@ -621,6 +624,17 @@
                 this.total  = this.settings.slides.length;
                 this.noshow = this.total < 2;
                 this._preload();   
+            }
+
+            if (this.settings.cover != oldCover) {
+              var newCover = this.settings.cover ? 'cover' : 'contain';
+              if (this.$slide.find('video').length > 0) {
+                if (this.support.objectFit) {
+                  this.$slide.find('video').css('object-fit', newCover);
+                }
+              } else {
+                this.$slide.find('.vegas-slide-inner').css('background-size', newCover);
+              }
             }
         },
 
